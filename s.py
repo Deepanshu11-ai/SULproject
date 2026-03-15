@@ -3,9 +3,9 @@ import numpy as np
 import os
 
 
-# ---------------------------
+# --------------------------------
 # Convert Volume Values
-# ---------------------------
+# --------------------------------
 def convert_volume(x):
 
     if pd.isna(x):
@@ -26,9 +26,9 @@ def convert_volume(x):
         return float(x)
 
 
-# ---------------------------
+# --------------------------------
 # Build Indicator Dataset
-# ---------------------------
+# --------------------------------
 def build_indicator_dataset(df):
 
     df = df.sort_values("date").reset_index(drop=True)
@@ -73,12 +73,16 @@ def build_indicator_dataset(df):
     return df
 
 
-# ---------------------------
-# Main Processing Pipeline
-# ---------------------------
+# --------------------------------
+# Main Processing Function
+# --------------------------------
 def process_file(input_file, output_file):
 
+    print("Loading file:", input_file)
+
     df = pd.read_csv(input_file)
+
+    print("Rows loaded:", len(df))
 
     # Rename columns
     df = df.rename(columns={
@@ -92,19 +96,18 @@ def process_file(input_file, output_file):
 
     # Convert date
     df["date"] = pd.to_datetime(df["Date"], format="mixed")
-
     df = df.drop(columns=["Date"])
 
-    # Remove commas from price columns
+    # Convert price columns to numeric
     price_cols = ["close", "open", "high", "low"]
 
     for col in price_cols:
         df[col] = df[col].astype(str).str.replace(",", "").astype(float)
 
-    # Convert volume
+    # Convert volume column
     df["volume"] = df["volume"].apply(convert_volume)
 
-    # Convert percent change
+    # Convert change percent
     df["change_percent"] = df["change_percent"].str.replace("%", "").astype(float)
 
     # Build indicators
@@ -126,22 +129,28 @@ def process_file(input_file, output_file):
         "target"
     ]]
 
-    # Create output folder if needed
-    os.makedirs(os.path.dirname(output_file), exist_ok=True)
+    print("Final dataset rows:", len(indicator_df))
 
-    # Save dataset
+    # Ensure output folder exists
+    folder = os.path.dirname(output_file)
+
+    if folder != "":
+        os.makedirs(folder, exist_ok=True)
+
+    print("Saving file to:", output_file)
+
     indicator_df.to_csv(output_file, index=False)
 
-    print("Dataset saved to:", output_file)
+    print("Dataset saved successfully")
 
 
-# ---------------------------
+# --------------------------------
 # Run Script
-# ---------------------------
+# --------------------------------
 if __name__ == "__main__":
 
     input_file = "/Users/deepanshus/StockMarketPredictor/Project/data/raw/IT/LTIM Historical Data (1).csv"
 
-    output_file = "data/Cleaned/Bank/AUFI_indicator_dataset.csv"
+    output_file = "/Users/deepanshus/StockMarketPredictor/Project/data/Cleaned/IT/LTIM_indicator_dataset.csv"
 
     process_file(input_file, output_file)
