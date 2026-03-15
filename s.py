@@ -149,8 +149,8 @@ def process_file(input_file, output_file):
 # --------------------------------
 if __name__ == "__main__":
 
-    input_file = "/Users/deepanshus/StockMarketPredictor/Project/data/raw/IT/LTIM Historical Data (1).csv"
+    input_file = "SULproject/data/raw/Pharma/Abbott India Stock Price History (1).csv"
 
-    output_file = "/Users/deepanshus/StockMarketPredictor/Project/data/Cleaned/IT/LTIM_indicator_dataset.csv"
+    output_file = "data/Cleaned/Bank/AUFI_indicator_dataset.csv"
 
     process_file(input_file, output_file)
